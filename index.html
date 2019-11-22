@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Meu Socket.IO</title>
+    <style>
+      .quadro {
+        min-height: 40vh;
+        background-color: #eb007d;
+      }
+      form {
+        padding: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pinte o Quadro!</h1>
+    <div class="quadro" id="quadro"></div>
+    <form action="#" id="colorForm">
+      <input type="text" name="bgcolor" id="bgcolor" value="#EB007D" />
+      <button>Pinta!</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(function() {
+        // Coloca o socket.io na var socket
+        var socket = io();
+        // Adiciona um event listener para evitar o ENVIO do formulário (e consequentemente o refresh da página)
+        $("#colorForm").submit(function(e) {
+          e.preventDefault(); // prevents page reloading
+          var cor = $("#bgcolor").val();
+          console.log("Enviei a cor!", cor);
+          // Emite a mudança de cor para o server
+          socket.emit("muda cor", cor);
+          return false;
+        });
+        // Ouve um canal para receber solicitações de mudança de cor do server
+        socket.on("muda cor", function(msg) {
+          $("#quadro").css("backgroundColor", msg);
+          $("#bgcolor").val(msg);
+          console.log("Recebi a cor!", msg);
+        });
+      });
+    </script>
+  </body>
+</html>
